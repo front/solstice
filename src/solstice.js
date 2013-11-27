@@ -55,12 +55,9 @@
         if($scope.fl) {
           options.fl = $scope.fl;
         }
-        console.log(options);
-
         Solstice.search(options)
         .then(function (data) {
           var res = data.data.response;
-          console.log(res);
           var transScope = $scope.$$nextSibling;
           transScope.solr = $rootScope.solr || {};
           transScope.solr.results = res.docs;
