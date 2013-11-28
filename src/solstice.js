@@ -6,14 +6,14 @@
 
   /* Solr search service */
   solr.provider('Solstice', function () {
-    var endpoint = '';
+    var defEndpoint = '';
     return {
       setEndpoint: function (url) {
-        endpoint = url;
+        defEndpoint = url;
       },
       $get: function ($http) {
-        return {
-          search: function(options) {
+        function Solstice(endpoint) {
+          this.search = function(options) {
             var url = endpoint + '/select/';
             var defaults = {
               wt: 'json',
@@ -23,8 +23,12 @@
             return $http.jsonp(url, {
               params: defaults
             });
-          }
+          };
+          this.withEndpoint = function (url) {
+            return new Solstice(url);
+          };
         }
+        return new Solstice(defEndpoint);
       }
     };
   });
@@ -38,12 +42,16 @@
       template: '<div ng-transclude></div>',
       scope: {
         q: '@query',
-        start: '@start',
-        rows: '@rows',
-        sort: '@sort',
-        fl: '@fields'
+        start: '@',
+        rows: '@',
+        sort: '@',
+        fl: '@fields',
+        indexUrl: '@'
       },
       controller: function ($scope, $rootScope, Solstice) {
+        var searchServ = !$scope.indexUrl ? Solstice :
+          Solstice.withEndpoint($scope.indexUrl);
+
         var options = {
           q: $scope.q || '*:*',
           start: $scope.start || 0,
@@ -55,7 +63,8 @@
         if($scope.fl) {
           options.fl = $scope.fl;
         }
-        Solstice.search(options)
+
+        searchServ.search(options)
         .then(function (data) {
           var res = data.data.response;
           var transScope = $scope.$$nextSibling;
