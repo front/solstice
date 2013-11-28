@@ -50,7 +50,7 @@
           rows: $scope.rows || 10
         };
         if($scope.sort) {
-          options.order = $scope.sort;
+          options.sort = $scope.sort;
         }
         if($scope.fl) {
           options.fl = $scope.fl;
