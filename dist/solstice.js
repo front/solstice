@@ -1,6 +1,6 @@
 /**
  * A simple Solr wrapper for AngularJS apps
- * @version v0.0.1 - 2013-11-28
+ * @version v0.0.2 - 2013-11-28
  * @link https://github.com/front/solstice
  * @author Élio Cró <elio@front.no>
  * @license MIT License, http://www.opensource.org/licenses/MIT
