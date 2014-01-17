@@ -1,0 +1,25 @@
+{
+  "name": "solstice",
+  "version": "0.0.2",
+  "homepage": "https://github.com/front/solstice",
+  "authors": [
+    "Elio Cro <elio@front.no>"
+  ],
+  "description": "A simple AngularJS module for querying Apache Solr indexes",
+  "main": ["dist/solstice.js", "dist/solstice.min.js"],
+  "keywords": [
+    "javascript",
+    "angularjs",
+    "solr",
+    "search",
+    "module"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
