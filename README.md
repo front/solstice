@@ -49,7 +49,7 @@ To use Solstice, you just need to add it as a dependency to the controller funct
 app.controller('MyController', function($scope, Solstice) {
   Solstice.search({
       q: 'bundle:article AND status:true',
-      fl: 'title, teaser, published'
+      fl: 'title, teaser, published',
       sort: 'published desc',
       rows: 10
   })
