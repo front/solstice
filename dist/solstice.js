@@ -1,6 +1,6 @@
 /**
  * A simple Solr wrapper for AngularJS apps
- * @version v0.0.2 - 2013-11-28
+ * @version v0.1 - 2015-07-03
  * @link https://github.com/front/solstice
  * @author Élio Cró <elio@front.no>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -12,36 +12,65 @@
   var solr = ng.module('solstice', []);
 
   /* Solr search service */
-  solr.provider('Solstice', function () {
+  function SolsticeProvider() {
     var defEndpoint = '';
-    return {
-      setEndpoint: function (url) {
-        defEndpoint = url;
-      },
-      $get: function ($http) {
-        function Solstice(endpoint) {
-          this.search = function(options) {
-            var url = endpoint + '/select/';
-            var defaults = {
-              wt: 'json',
-              'json.wrf': 'JSON_CALLBACK'
-            };
-            ng.extend(defaults, options);
-            return $http.jsonp(url, {
-              params: defaults
-            });
+    function $get($http) {
+      function Solstice(endpoint) {
+        this.search = function(options) {
+          var url = endpoint + '/select/';
+          var defaults = {
+            wt: 'json',
+            'json.wrf': 'JSON_CALLBACK'
           };
-          this.withEndpoint = function (url) {
-            return new Solstice(url);
-          };
-        }
-        return new Solstice(defEndpoint);
+          ng.extend(defaults, options);
+          return $http.jsonp(url, {
+            params: defaults
+          });
+        };
+        this.withEndpoint = function (url) {
+          return new Solstice(url);
+        };
       }
-    };
-  });
+      return new Solstice(defEndpoint);
+    }
+    function setEndpoint(url) {
+      defEndpoint = url;
+    }
+
+    return {
+      $get: [ '$http', $get ],
+      setEndpoint: setEndpoint
+    }
+  }
 
   /* Solr search directive */
-  solr.directive('solrSearch', function() {
+  function directive() {
+    /* Solr search directive controller */
+    function controller($scope, $rootScope, Solstice) {
+      var searchServ = !$scope.indexUrl ? Solstice :
+          Solstice.withEndpoint($scope.indexUrl);
+
+      var options = {
+        q: $scope.q || '*:*',
+        start: $scope.start || 0,
+        rows: $scope.rows || 10
+      };
+      if($scope.sort) {
+        options.sort = $scope.sort;
+      }
+      if($scope.fl) {
+        options.fl = $scope.fl;
+      }
+
+      searchServ.search(options).then(function (data) {
+        var res = data.data.response;
+        var transScope = $scope.$$nextSibling;
+        transScope.solr = $rootScope.solr || {};
+        transScope.solr.results = res.docs;
+        transScope.solr.count = res.numFound;
+      });
+    }
+
     return {
       restrict: 'AE',
       transclude: true,
@@ -55,32 +84,12 @@
         fl: '@fields',
         indexUrl: '@'
       },
-      controller: function ($scope, $rootScope, Solstice) {
-        var searchServ = !$scope.indexUrl ? Solstice :
-          Solstice.withEndpoint($scope.indexUrl);
-
-        var options = {
-          q: $scope.q || '*:*',
-          start: $scope.start || 0,
-          rows: $scope.rows || 10
-        };
-        if($scope.sort) {
-          options.sort = $scope.sort;
-        }
-        if($scope.fl) {
-          options.fl = $scope.fl;
-        }
-
-        searchServ.search(options)
-        .then(function (data) {
-          var res = data.data.response;
-          var transScope = $scope.$$nextSibling;
-          transScope.solr = $rootScope.solr || {};
-          transScope.solr.results = res.docs;
-          transScope.solr.count = res.numFound;
-        });
-      }
+      controller: [ '$scope', '$rootScope', 'Solstice', controller ]
     };
-  });
+  }
+
+  solr.provider('Solstice', [ SolsticeProvider ]);
+  solr.directive('solrSearch', [ directive ]);
 
 })(window.angular);
+

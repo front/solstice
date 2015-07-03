@@ -67,7 +67,7 @@ For some queries you may need to use a different index than the global one. In t
 In the following example, we create a new service called **Equinox** that uses a different Solr index.
 
 ```
-app.provider('Equinox', function(Solstice) {
+app.service('Equinox', function(Solstice) {
   return Solstice.withEndpoint('a-diferent-solr-index-url');
 });
 
