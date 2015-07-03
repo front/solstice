@@ -36,34 +36,34 @@
     }
   }
 
-  /* Solr search directive controller */
-  function directiveController($scope, $rootScope, Solstice) {
-    var searchServ = !$scope.indexUrl ? Solstice :
-        Solstice.withEndpoint($scope.indexUrl);
-
-    var options = {
-      q: $scope.q || '*:*',
-      start: $scope.start || 0,
-      rows: $scope.rows || 10
-    };
-    if($scope.sort) {
-      options.sort = $scope.sort;
-    }
-    if($scope.fl) {
-      options.fl = $scope.fl;
-    }
-
-    searchServ.search(options).then(function (data) {
-      var res = data.data.response;
-      var transScope = $scope.$$nextSibling;
-      transScope.solr = $rootScope.solr || {};
-      transScope.solr.results = res.docs;
-      transScope.solr.count = res.numFound;
-    });
-  }
-
   /* Solr search directive */
   function directive() {
+    /* Solr search directive controller */
+    function controller($scope, $rootScope, Solstice) {
+      var searchServ = !$scope.indexUrl ? Solstice :
+          Solstice.withEndpoint($scope.indexUrl);
+
+      var options = {
+        q: $scope.q || '*:*',
+        start: $scope.start || 0,
+        rows: $scope.rows || 10
+      };
+      if($scope.sort) {
+        options.sort = $scope.sort;
+      }
+      if($scope.fl) {
+        options.fl = $scope.fl;
+      }
+
+      searchServ.search(options).then(function (data) {
+        var res = data.data.response;
+        var transScope = $scope.$$nextSibling;
+        transScope.solr = $rootScope.solr || {};
+        transScope.solr.results = res.docs;
+        transScope.solr.count = res.numFound;
+      });
+    }
+
     return {
       restrict: 'AE',
       transclude: true,
@@ -77,12 +77,11 @@
         fl: '@fields',
         indexUrl: '@'
       },
-      controller: 'solrSearchController'
+      controller: [ '$scope', '$rootScope', 'Solstice', controller ]
     };
   }
 
   solr.provider('Solstice', [ SolsticeProvider ]);
-  solr.controller('solrSearchController', [ '$scope', '$rootScope', 'Solstice', directiveController ]);
   solr.directive('solrSearch', [ directive ]);
 
 })(window.angular);
