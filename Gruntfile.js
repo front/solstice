@@ -30,7 +30,7 @@ module.exports = function(grunt) {
     uglify: {
       options: {
         banner: '<%= meta.banner %>',
-        mangle: false
+        mangle: true
       },
       dist: {
         src: ['<%= concat.dist.dest %>'],
