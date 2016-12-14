@@ -5,13 +5,13 @@
   var solr = ng.module('solstice', []);
 
   /* Solr search service */
-  solr.provider('Solstice', function () {
+  solr.provider('Solstice', [function () {
     var defEndpoint = '';
     return {
       setEndpoint: function (url) {
         defEndpoint = url;
       },
-      $get: function ($http) {
+      $get: ['$http', function ($http) {
         function Solstice(endpoint) {
           this.search = function(options) {
             var url = endpoint + '/select/';
@@ -29,12 +29,12 @@
           };
         }
         return new Solstice(defEndpoint);
-      }
+      }]
     };
-  });
+  }]);
 
   /* Solr search directive */
-  solr.directive('solrSearch', function() {
+  solr.directive('solrSearch', [function() {
     return {
       restrict: 'AE',
       transclude: true,
@@ -48,7 +48,7 @@
         fl: '@fields',
         indexUrl: '@'
       },
-      controller: function ($scope, $rootScope, Solstice) {
+      controller: ['$scope', 'Solstice', function ($scope, Solstice) {
         var searchServ = !$scope.indexUrl ? Solstice :
           Solstice.withEndpoint($scope.indexUrl);
 
@@ -65,15 +65,19 @@
         }
 
         searchServ.search(options)
-        .then(function (data) {
-          var res = data.data.response;
-          var transScope = $scope.$$nextSibling;
-          transScope.solr = $rootScope.solr || {};
-          transScope.solr.results = res.docs;
-          transScope.solr.count = res.numFound;
+        .then(function (_) {
+          var res = _.data.response;
+          var transScope = $scope.$$childHead || $scope.$$nextSibling;
+          transScope.solr = {
+            results: res.docs,
+            count: res.numFound
+          };
+        })
+        .catch(function (_) {
+          window.console.error(_.data);
         });
-      }
+      }]
     };
-  });
+  }]);
 
 })(window.angular);
