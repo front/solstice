@@ -2,6 +2,8 @@ Solstice
 ========
 A simple Solr wrapper for AngularJS apps
 
+> Only supports Angularjs up to **1.5.9**. Version 1.6 introduced breaking changes on the $http module: new jsonp callback parameter and requirement to use trusted resource urls.
+
 Solstice is an AngularJS module, developed by [Frontkom](http://www.frontkom.no/), that enables simple querying of Solr indexes.
 Solstice provides a search **service** and a companion **directive** that can be used in any Angularjs project.
 
@@ -20,7 +22,7 @@ bower install solstice
 Clone or download this repository and add the **dist/solstice.js** or **dist/solstice.min.js** file to your html.
 
 ```
-  <script type="text/javascript" src="/js/solstice.js"></script>
+  <script type="text/javascript" src=".../dist/solstice.js"></script>
 
 ```
 
