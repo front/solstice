@@ -53,7 +53,8 @@ app.controller('MyController', function($scope, Solstice) {
       sort: 'published desc',
       rows: 10
   })
-  .then(function (data){
+  .then(function (_){
+    var data = _.data.response;
     $scope.results = data.docs;
     console.log(data.docs);
   });
@@ -73,11 +74,12 @@ app.provider('Equinox', function(Solstice) {
 
 app.controller('AnotherController', function($scope, Equinox) {
   Equinox.search({
-      q: '',
+      q: '*',
       fl: 'title, teaser, published'
       rows: 2
   })
-  .then(function (data){
+  .then(function (_){
+    var data = _.data.response;
     $scope.results = data.docs;
     console.log(data.docs);
   });
@@ -100,10 +102,10 @@ To use it, just add the directive `solr-search` to any element in the html. This
 ```
 <any-tag solr-search index-url="your-index-url" start="0" rows="20"  >
   <header>
-    <p>Found {{solr.found}} results.</p>
+    <p>Found {{ solr.found }} results.</p>
   </header>
   <ul>
-    <li ng-repeat="item in solr.results">{{item.title}}</li>
+    <li ng-repeat="item in solr.results">{{ item.title }}</li>
   </ul>
 </any-tag>
 ```
