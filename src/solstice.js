@@ -11,17 +11,17 @@
       setEndpoint: function (url) {
         defEndpoint = url;
       },
-      $get: ['$http', function ($http) {
+      $get: ['$http', '$sce', function ($http, $sce) {
         function Solstice(endpoint) {
           this.search = function(options) {
-            var url = endpoint + '/select/';
+            var url = $sce.trustAsResourceUrl(endpoint + '/select/');
             var defaults = {
-              wt: 'json',
-              'json.wrf': 'JSON_CALLBACK'
+              wt: 'json'
             };
             ng.extend(defaults, options);
             return $http.jsonp(url, {
-              params: defaults
+              params: defaults,
+              jsonpCallbackParam: 'json.wrf'
             });
           };
           this.withEndpoint = function (url) {
