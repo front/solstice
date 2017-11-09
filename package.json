@@ -1,7 +1,7 @@
 {
   "name": "solstice",
   "description": "A simple Solr wrapper for AngularJS apps",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "author": "Élio Cró <elio@front.no>",
   "homepage": "https://github.com/front/solstice",
   "scripts": {
