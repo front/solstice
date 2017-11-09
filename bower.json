@@ -1,12 +1,12 @@
 {
   "name": "solstice",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/front/solstice",
   "authors": [
     "Elio Cro <elio@front.no>"
   ],
   "description": "A simple Apache Solr wrapper for AngularJS apps",
-  "main": "./dist/solstice.min.js",
+  "main": "./dist/solstice.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/front/solstice.git"
