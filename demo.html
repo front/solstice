@@ -1,0 +1,86 @@
+<!doctype html>
+<html ng-app="test">
+<head>
+  <title>Solstice demo</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+  <div ng-controller="TestCtrl">
+    <h2>{{ text }}</h2>
+    <span ng-show="count">There are {{ count }} items on the default index.</span>
+  </div>
+
+  <h2>As a directive using default index</h2>
+  <ul solr-search rows="5" start="0" sort="id desc" fields="id,title">
+    <li ng-repeat="item in solr.results">{{ item.id }} - {{ item.title }}</li>
+  </ul>
+
+  <h2>Separate directive with custom index</h2>
+  <div solr-search rows="10" start="0" sort="id desc" fields="id,title"
+    index-url="http://solr1.newsfront.no/solr/newsfront-farmatid">
+    <span>There are {{ solr.count }} items on this index.</span>
+    <ul>
+      <li ng-repeat="item in solr.results">{{ item.id }} - {{ item.title }}</li>
+    </ul>
+  </div>
+
+  <h2>Separate controller and index</h2>
+  <div ng-controller="EquinoxCtrl">
+    <span ng-show="count">There are {{ count }} items on this index.</span>
+    <ul>
+      <li ng-repeat="item in results">{{ item.id }} - {{ item.title }}</li>
+    </ul>
+  </div>
+
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.js"></script>
+  <script src="./dist/solstice.min.js"></script>
+  <script>
+    (function (ng) {
+      var app = ng.module('test', ['solstice']);
+
+      app.config(function (SolsticeProvider) {
+        SolsticeProvider.setEndpoint('http://solr1.newsfront.no/solr/newsfront-frontmag');
+      });
+
+      app.controller('TestCtrl', function ($scope, $timeout, Solstice) {
+        $scope.text = 'Solstice';
+
+        Solstice.search({
+          q: '*',
+          fl: 'id,title'
+        })
+        .then(function (_) {
+          var res = _.data.response;
+          $scope.count = res.numFound;
+        })
+        .catch(function (err) {
+          console.error(err);
+        });
+      });
+
+
+      app.factory('Equinox', function (Solstice) {
+        return Solstice.withEndpoint('http://solr1.newsfront.no/solr/newsfront-norskgolf');
+      });
+
+      app.controller('EquinoxCtrl', function ($scope, Equinox) {
+        Equinox.search({
+          q: '*',
+          fl: 'id,title',
+          rows: 7
+        })
+        .then(function (_) {
+          var res = _.data.response;
+          $scope.count = res.numFound;
+          $scope.results = res.docs;
+        })
+        .catch(function (err) {
+          console.error(err);
+        });
+      });
+
+    })(window.angular);
+  </script>
+</body>
+</html>
